@@ -13,8 +13,8 @@ _id = '904606353' #我
 # _id = '435759920' #田
 # _id = '198159239' #机子
 # _id = '240110134' #代练
-_id = '143316122' #yidun
-
+# _id = '143316122' #yidun
+# _id = '230767983'
 url = 'https://api.opendota.com/api/matches/'
 
 def output_cloud(_id):
@@ -37,15 +37,15 @@ def output_cloud(_id):
         height=600,
         font_path='STZHONGS.TTF',
         max_font_size=100,      #字体大小
-        min_font_size=10,
+        min_font_size=30,
         collocations=False, 
-        max_words=1000 
+        max_words=40 
     )
     wc.generate(text)
     wc.to_file(_id+'.png') #图片保存
 
 
-def analyze_matchs(_id):
+def analyze_matchs(_id,reverse=False):
     headers = {
         'Sec-Fetch-Mode': 'cors',
         'Referer': 'https://www.opendota.com/request',
@@ -53,8 +53,11 @@ def analyze_matchs(_id):
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36',
     }
     matches = requests.get('https://api.opendota.com/api/players/'+_id+'/matches').json()
-    for match in tqdm(matches):
-        response = requests.post('https://api.opendota.com/api/request/'+str(match['match_id']), headers=headers)
+    match_ids = [match['match_id'] for match in matches]
+    if reverse:
+        match_ids.sort()
+    for match_id in tqdm(match_ids):
+        response = requests.post('https://api.opendota.com/api/request/'+str(match_id), headers=headers)
         time.sleep(2)
 
 def get_chat(_id):
@@ -78,8 +81,9 @@ def get_chat(_id):
                     file.write(chat['key']+'\n')
                     print(chat['key'])
 
-analyze_matchs(_id)
-get_chat(_id)
+analyze_matchs(_id,reverse=True)
+# get_chat(_id)
 
 
 # output_cloud(_id)
+
