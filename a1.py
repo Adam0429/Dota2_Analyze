@@ -17,7 +17,11 @@ def getMatchId(user_id,number):
 
 def getMatchData(match_id):
 	match_url = 'https://api.opendota.com/api/matches/%s'%(match_id)
-	match_data = requests.get(match_url).json()
+	result = requests.get(match_url)
+	match_data = result.json()
+	while 'error' in match_data.keys() and match_data['error'] == 'rate limit exceeded':
+		result = requests.get(match_url)
+		match_data = result.json()
 	# if match_data['radiant_win'] == True:
 	# print(match_data['radiant_score']-match_data['dire_score'],match_data['radiant_win'])
 	# print(alive_towers(match_data['tower_status_radiant']),alive_towers(match_data['tower_status_dire']))
@@ -27,10 +31,11 @@ def getMatchData(match_id):
 
 my_id = '904606353' #我
 
+import time
 match_ids = getMatchId(my_id,1400)
 raw_data = []
 for match_id in tqdm(match_ids):
-	raw_data.append(getMatchData(match_id))
+    raw_data.append(getMatchData(match_id))
 IPython.embed()
 df = pd.DataFrame(raw_data,index=None)
 df.to_csv('raw_data.csv')
