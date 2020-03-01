@@ -4,6 +4,7 @@ import IPython
 from wordcloud import WordCloud
 import csv
 import pandas as pd 
+from time import sleep
 
 # 分析 推塔 杀人的关系
 def alive_towers(n):
@@ -22,6 +23,8 @@ def getMatchData(match_id):
 	while 'error' in match_data.keys() and match_data['error'] == 'rate limit exceeded':
 		result = requests.get(match_url)
 		match_data = result.json()
+	sleep(2)
+	print(match_data['radiant_gold_adv'])
 	# if match_data['radiant_win'] == True:
 	# print(match_data['radiant_score']-match_data['dire_score'],match_data['radiant_win'])
 	# print(alive_towers(match_data['tower_status_radiant']),alive_towers(match_data['tower_status_dire']))
@@ -31,14 +34,16 @@ def getMatchData(match_id):
 
 my_id = '904606353' #我
 
-import time
+# analyze_matchs(my_id,reverse=True)
+
+
 match_ids = getMatchId(my_id,1400)
 raw_data = []
 for match_id in tqdm(match_ids):
     raw_data.append(getMatchData(match_id))
 IPython.embed()
 df = pd.DataFrame(raw_data,index=None)
-df.to_csv('raw_data.csv')
+df.to_csv('raw_data2.csv')
 # except:
 	# 	pass
 # get_chat(_id)
